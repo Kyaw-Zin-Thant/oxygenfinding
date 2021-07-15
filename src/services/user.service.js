@@ -5,20 +5,22 @@ async function createUserService ({ name, phone }) {
   try {
     const user = await User.findOne({ phone })
     if (user) {
-      const token = await jwt.sign({ name, phone }, 'secret', {
+      const userId = user._id
+      const token = await jwt.sign({ userId }, 'secret', {
         expiresIn: '24h'
       })
-      return { ...user, ...{ token: token } }
+      return { token: token }
     }
     const createUser = new User({
       name,
       phone
     })
     await createUser.save()
-    const token = await jwt.sign({ name, phone }, 'secret', {
+    const userId = createUser._id
+    const token = await jwt.sign({ userId }, 'secret', {
       expiresIn: '24h'
     })
-    return { ...createUser, ...{ token: token } }
+    return { token: token }
   } catch (error) {
     const err = new Error()
     err.message = error.message
