@@ -1,4 +1,8 @@
-import { getPostService, createPostService } from '../services/post.service'
+import {
+  getPostService,
+  createPostService,
+  likePostService
+} from '../services/post.service'
 
 async function getPost (req, res, next) {
   try {
@@ -42,4 +46,15 @@ async function createPost (req, res, next) {
   }
 }
 
-export { getPost, createPost }
+async function likePost (req, res, next) {
+  try {
+    const { id } = req.params
+    const { userId } = req.userData
+    const post = await likePostService({ id, userId })
+    res.status(200).send(post)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export { getPost, createPost, likePost }

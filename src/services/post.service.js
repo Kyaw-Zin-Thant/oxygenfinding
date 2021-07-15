@@ -80,4 +80,47 @@ async function createPostService ({
   }
 }
 
-export { getPostService, createPostService }
+async function likePostService ({ id, userId }) {
+  try {
+    const post = await Post.findOne({ _id: id })
+    if (!post) {
+      const err = new Error()
+      err.message = 'Post not found.'
+      err.status = 400
+      throw err
+    }
+    let likes = post.metadata.likes
+    const likeUsers = post.metadata.likeUsers
+    const checkUser = likeUsers.includes(userId)
+    if (checkUser) {
+      likes = likes - 1
+      const index = likeUsers.indexOf(userId)
+      if (index > -1) {
+        likeUsers.splice(index, 1)
+      }
+      await Post.findByIdAndUpdate(id, {
+        metadata: {
+          likes: likes,
+          likeUsers: likeUsers
+        }
+      })
+      return { message: 'Success' }
+    }
+    likes = likes + 1
+    likeUsers.push(userId)
+    await Post.findByIdAndUpdate(id, {
+      metadata: {
+        likes: likes,
+        likeUsers: likeUsers
+      }
+    })
+    return { message: 'Success.' }
+  } catch (error) {
+    const err = new Error()
+    err.message = error.message
+    err.status = error.status
+    throw err
+  }
+}
+
+export { getPostService, createPostService, likePostService }
