@@ -5,8 +5,8 @@ import {
 
 async function getTownship (req, res, next) {
   try {
-    const { regionName } = req.query
-    const township = await getTownshipService({ regionName })
+    const { regionId } = req.query
+    const township = await getTownshipService({ regionId })
     res.status(200).send(township)
   } catch (error) {
     next(error)

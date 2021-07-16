@@ -1,9 +1,9 @@
 import Region from '../models/region'
 import Township from '../models/township'
 
-async function getTownshipService ({ regionName }) {
+async function getTownshipService ({ regionId }) {
   try {
-    const region = await Region.findOne({ name: regionName })
+    const region = await Region.findOne({ _id: regionId })
     if (!region) {
       const err = new Error()
       err.message = 'Region not found.'
