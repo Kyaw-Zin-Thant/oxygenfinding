@@ -229,9 +229,40 @@ async function dislikePostService ({ id, userId }) {
   }
 }
 
+async function commentPostService ({ id, userId, text }) {
+  try {
+    const post = await Post.findOne({ _id: id })
+    if (!post) {
+      const err = new Error()
+      err.message = 'Post not found.'
+      err.status = 400
+      throw err
+    }
+    const comments = post.metadata.comments
+    const data = { userId, text }
+    comments.push(data)
+    await Post.findByIdAndUpdate(id, {
+      metadata: {
+        likes: post.metadata.likes,
+        dislikes: post.metadata.dislikes,
+        comments: comments,
+        likeUsers: post.metadata.likeUsers,
+        dislikeUsers: post.metadata.dislikeUsers
+      }
+    })
+    return { message: 'Success.' }
+  } catch (error) {
+    const err = new Error()
+    err.message = error.message
+    err.status = error.status
+    throw err
+  }
+}
+
 export {
   getPostService,
   createPostService,
   likePostService,
-  dislikePostService
+  dislikePostService,
+  commentPostService
 }

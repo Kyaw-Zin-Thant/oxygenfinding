@@ -2,7 +2,8 @@ import {
   getPostService,
   createPostService,
   likePostService,
-  dislikePostService
+  dislikePostService,
+  commentPostService
 } from '../services/post.service'
 
 async function getPost (req, res, next) {
@@ -69,4 +70,16 @@ async function dislikePost (req, res, next) {
   }
 }
 
-export { getPost, createPost, likePost, dislikePost }
+async function commentPost (req, res, next) {
+  try {
+    const { id } = req.params
+    const { userId } = req.userData
+    const { text } = req.body
+    const post = await commentPostService({ id, userId, text })
+    res.status(200).send(post)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export { getPost, createPost, likePost, dislikePost, commentPost }
