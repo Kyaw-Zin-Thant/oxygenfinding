@@ -32,8 +32,8 @@ async function getPostService ({ regionId, townshipId }) {
 }
 
 async function createPostService ({
-  regionName,
-  townshipName,
+  regionId,
+  townshipId,
   status,
   plantName,
   address,
@@ -44,14 +44,14 @@ async function createPostService ({
   tomorrowUpdate
 }) {
   try {
-    const region = await Region.findOne({ name: regionName })
+    const region = await Region.findOne({ _id: regionId })
     if (!region) {
       const err = new Error()
       err.message = 'Region not found.'
       err.status = 400
       throw err
     }
-    const township = await Township.findOne({ name: townshipName })
+    const township = await Township.findOne({ _id: townshipId })
     if (!township) {
       const err = new Error()
       err.message = 'Township not found.'

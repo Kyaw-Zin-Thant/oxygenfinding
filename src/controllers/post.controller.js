@@ -17,8 +17,8 @@ async function getPost (req, res, next) {
 async function createPost (req, res, next) {
   try {
     const {
-      regionName,
-      townshipName,
+      regionId,
+      townshipId,
       status,
       plantName,
       address,
@@ -29,8 +29,8 @@ async function createPost (req, res, next) {
       tomorrowUpdate
     } = req.body
     const post = await createPostService({
-      regionName,
-      townshipName,
+      regionId,
+      townshipId,
       status,
       plantName,
       address,
