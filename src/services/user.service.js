@@ -1,32 +1,32 @@
-import User from '../models/user'
-import jwt from 'jsonwebtoken'
+import User from '../models/user';
+import jwt from 'jsonwebtoken';
 
-async function createUserService ({ name, phone }) {
+async function createUserService({ name, phone }) {
   try {
-    const user = await User.findOne({ phone })
+    const user = await User.findOne({ phone });
     if (user) {
-      const userId = user._id
+      const userId = user._id;
       const token = await jwt.sign({ userId }, 'secret', {
-        expiresIn: '24h'
-      })
-      return { token: token }
+        expiresIn: '24h',
+      });
+      return { token: token, user: user };
     }
     const createUser = new User({
       name,
-      phone
-    })
-    await createUser.save()
-    const userId = createUser._id
+      phone,
+    });
+    await createUser.save();
+    const userId = createUser._id;
     const token = await jwt.sign({ userId }, 'secret', {
-      expiresIn: '24h'
-    })
-    return { token: token }
+      expiresIn: '24h',
+    });
+    return { token: token, user: createUser };
   } catch (error) {
-    const err = new Error()
-    err.message = error.message
-    err.status = error.status
-    throw err
+    const err = new Error();
+    err.message = error.message;
+    err.status = error.status;
+    throw err;
   }
 }
 
-export { createUserService }
+export { createUserService };

@@ -3,20 +3,27 @@ import {
   createPostService,
   likePostService,
   dislikePostService,
-  commentPostService
-} from '../services/post.service'
+  commentPostService,
+} from '../services/post.service';
 
-async function getPost (req, res, next) {
+async function getPost(req, res, next) {
   try {
-    const { regionId, townshipId, tomorrowUpdate } = req.query
-    const post = await getPostService({ regionId, townshipId, tomorrowUpdate })
-    res.status(200).send(post)
+    const { regionId, townshipId, tomorrowUpdate } = req.query;
+
+    const { userId } = req.userData;
+    const post = await getPostService({
+      regionId,
+      townshipId,
+      tomorrowUpdate,
+      userId,
+    });
+    res.status(200).send(post);
   } catch (error) {
-    next(error)
+    next(error);
   }
 }
 
-async function createPost (req, res, next) {
+async function createPost(req, res, next) {
   try {
     const {
       regionId,
@@ -28,8 +35,8 @@ async function createPost (req, res, next) {
       information,
       remark,
       size,
-      tomorrowUpdate
-    } = req.body
+      tomorrowUpdate,
+    } = req.body;
     const post = await createPostService({
       regionId,
       townshipId,
@@ -40,46 +47,46 @@ async function createPost (req, res, next) {
       information,
       remark,
       size,
-      tomorrowUpdate
-    })
-    res.status(200).send(post)
+      tomorrowUpdate,
+    });
+    res.status(200).send(post);
   } catch (error) {
-    next(error)
+    next(error);
   }
 }
 
-async function likePost (req, res, next) {
+async function likePost(req, res, next) {
   try {
-    const { id } = req.params
-    const { userId } = req.userData
-    const post = await likePostService({ id, userId })
-    res.status(200).send(post)
+    const { id } = req.params;
+    const { userId } = req.userData;
+    const post = await likePostService({ id, userId });
+    res.status(200).send(post);
   } catch (error) {
-    next(error)
+    next(error);
   }
 }
 
-async function dislikePost (req, res, next) {
+async function dislikePost(req, res, next) {
   try {
-    const { id } = req.params
-    const { userId } = req.userData
-    const post = await dislikePostService({ id, userId })
-    res.status(200).send(post)
+    const { id } = req.params;
+    const { userId } = req.userData;
+    const post = await dislikePostService({ id, userId });
+    res.status(200).send(post);
   } catch (error) {
-    next(error)
+    next(error);
   }
 }
 
-async function commentPost (req, res, next) {
+async function commentPost(req, res, next) {
   try {
-    const { id } = req.params
-    const { userId } = req.userData
-    const { text } = req.body
-    const post = await commentPostService({ id, userId, text })
-    res.status(200).send(post)
+    const { id } = req.params;
+    const { userId } = req.userData;
+    const { text } = req.body;
+    const post = await commentPostService({ id, userId, text });
+    res.status(200).send(post);
   } catch (error) {
-    next(error)
+    next(error);
   }
 }
 
-export { getPost, createPost, likePost, dislikePost, commentPost }
+export { getPost, createPost, likePost, dislikePost, commentPost };

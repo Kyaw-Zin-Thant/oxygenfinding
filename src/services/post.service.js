@@ -1,82 +1,158 @@
-import Region from '../models/region'
-import Township from '../models/township'
-import Post from '../models/post'
+import Region from '../models/region';
+import Township from '../models/township';
+import Post from '../models/post';
+const ObjectId = require('mongoose').Types.ObjectId;
 
-async function getPostService ({ regionId, townshipId, tomorrowUpdate }) {
+async function getPostService({
+  regionId,
+  townshipId,
+  tomorrowUpdate,
+  userId,
+}) {
   try {
+    let projectData = {
+      $project: {
+        regionId: 1,
+        townshipId: 1,
+        status: 1,
+        plantName: 1,
+        address: 1,
+        phoneNumber: 1,
+        information: 1,
+        remark: 1,
+        size: 1,
+        tomorrowUpdate: 1,
+        metadata: 1,
+        like: {
+          $cond: [
+            { $in: [ObjectId(userId), '$metadata.likeUsers'] },
+            true,
+            false,
+          ],
+        },
+        dislike: {
+          $cond: [
+            { $in: [ObjectId(userId), '$metadata.likeUsers'] },
+            true,
+            false,
+          ],
+        },
+      },
+    };
     if (!regionId) {
       if (!townshipId) {
         if (tomorrowUpdate === 'true') {
-          const post = await Post.find({ tomorrowUpdate: true })
-          return post
+          const post = await Post.aggregate([
+            {
+              $match: { tomorrowUpdate: true },
+            },
+            projectData,
+          ]);
+          return post;
         }
-        const post = await Post.find({ tomorrowUpdate: false })
-        return post
+        const post = await Post.aggregate([
+          {
+            $match: { tomorrowUpdate: false },
+          },
+          projectData,
+        ]);
+        return post;
       }
       if (tomorrowUpdate === 'true') {
-        const post = await Post.find({
-          townshipId: townshipId,
-          tomorrowUpdate: true
-        })
-        return post
+        const post = await Post.aggregate([
+          {
+            $match: {
+              townshipId: townshipId,
+              tomorrowUpdate: true,
+            },
+          },
+          projectData,
+        ]);
+        return post;
       }
-      const post = await Post.find({
-        townshipId: townshipId,
-        tomorrowUpdate: false
-      })
-      return post
+      const post = await Post.aggregate([
+        {
+          $match: {
+            townshipId: townshipId,
+            tomorrowUpdate: false,
+          },
+        },
+        projectData,
+      ]);
+      return post;
     }
     if (!townshipId) {
       if (tomorrowUpdate === 'true') {
-        const post = await Post.find({
-          regionId: regionId,
-          tomorrowUpdate: true
-        })
-        return post
+        const post = await Post.aggregate([
+          {
+            $match: {
+              regionId: regionId,
+              tomorrowUpdate: true,
+            },
+          },
+          projectData,
+        ]);
+        return post;
       }
-      const post = await Post.find({
-        regionId: regionId,
-        tomorrowUpdate: false
-      })
-      return post
+      const post = await Post.aggregate([
+        {
+          $match: {
+            regionId: regionId,
+            tomorrowUpdate: false,
+          },
+        },
+        projectData,
+      ]);
+      return post;
     }
-    const region = await Region.findOne({ _id: regionId })
+    const region = await Region.findOne({ _id: regionId });
     if (!region) {
-      const err = new Error()
-      err.message = 'Region not found.'
-      err.status = 400
-      throw err
+      const err = new Error();
+      err.message = 'Region not found.';
+      err.status = 400;
+      throw err;
     }
-    const township = await Township.findOne({ _id: townshipId })
+    const township = await Township.findOne({ _id: townshipId });
     if (!township) {
-      const err = new Error()
-      err.message = 'Township not found.'
-      err.status = 400
-      throw err
+      const err = new Error();
+      err.message = 'Township not found.';
+      err.status = 400;
+      throw err;
     }
     if (tomorrowUpdate === 'true') {
-      const post = await Post.find({
-        regionId: region._id,
-        townshipId: township._id,
-        tomorrowUpdate: true
-      })
-      return post
+      const post = await Post.aggregate([
+        {
+          $match: {
+            regionId: region._id,
+            townshipId: township._id,
+            tomorrowUpdate: true,
+          },
+        },
+        projectData,
+      ]);
+      return post;
     }
-    const post = await Post.find({
-      regionId: region._id,
-      townshipId: township._id,
-      tomorrowUpdate: false
-    })
-    return post
+    const post = await Post.aggregate([
+      {
+        $match: {
+          regionId: region._id,
+          townshipId: township._id,
+          tomorrowUpdate: false,
+        },
+      },
+      projectData,
+    ]);
+    console.log(post);
+    return post;
   } catch (error) {
-    const err = new Error()
-    err.message = error.message
-    err.status = error.status
-    throw err
+    const err = new Error();
+    err.message = error.message;
+    err.status = error.status;
+    throw err;
   }
 }
 
-async function createPostService ({
+async function createPostService({
   regionId,
   townshipId,
   status,
@@ -86,22 +162,22 @@ async function createPostService ({
   information,
   remark,
   size,
-  tomorrowUpdate
+  tomorrowUpdate,
 }) {
   try {
-    const region = await Region.findOne({ _id: regionId })
+    const region = await Region.findOne({ _id: regionId });
     if (!region) {
-      const err = new Error()
-      err.message = 'Region not found.'
-      err.status = 400
-      throw err
+      const err = new Error();
+      err.message = 'Region not found.';
+      err.status = 400;
+      throw err;
     }
-    const township = await Township.findOne({ _id: townshipId })
+    const township = await Township.findOne({ _id: townshipId });
     if (!township) {
-      const err = new Error()
-      err.message = 'Township not found.'
-      err.status = 400
-      throw err
+      const err = new Error();
+      err.message = 'Township not found.';
+      err.status = 400;
+      throw err;
     }
     const post = new Post({
       regionId: region._id,
@@ -113,38 +189,38 @@ async function createPostService ({
       information,
       remark,
       size,
-      tomorrowUpdate
-    })
-    await post.save()
-    return { message: 'Success.' }
+      tomorrowUpdate,
+    });
+    await post.save();
+    return { message: 'Success.' };
   } catch (error) {
-    const err = new Error()
-    err.message = error.message
-    err.status = error.status
-    throw err
+    const err = new Error();
+    err.message = error.message;
+    err.status = error.status;
+    throw err;
   }
 }
 
-async function likePostService ({ id, userId }) {
+async function likePostService({ id, userId }) {
   try {
-    const post = await Post.findOne({ _id: id })
+    const post = await Post.findOne({ _id: id });
     if (!post) {
-      const err = new Error()
-      err.message = 'Post not found.'
-      err.status = 400
-      throw err
+      const err = new Error();
+      err.message = 'Post not found.';
+      err.status = 400;
+      throw err;
     }
-    let likes = post.metadata.likes
-    const dislikes = post.metadata.dislikes
-    const comments = post.metadata.comments
-    const likeUsers = post.metadata.likeUsers
-    const dislikeUsers = post.metadata.dislikeUsers
-    const checkUser = likeUsers.includes(userId)
+    let likes = post.metadata.likes;
+    const dislikes = post.metadata.dislikes;
+    const comments = post.metadata.comments;
+    const likeUsers = post.metadata.likeUsers;
+    const dislikeUsers = post.metadata.dislikeUsers;
+    const checkUser = likeUsers.includes(userId);
     if (checkUser) {
-      likes = likes - 1
-      const index = likeUsers.indexOf(userId)
+      likes = likes - 1;
+      const index = likeUsers.indexOf(userId);
       if (index > -1) {
-        likeUsers.splice(index, 1)
+        likeUsers.splice(index, 1);
       }
       await Post.findByIdAndUpdate(id, {
         metadata: {
@@ -152,51 +228,51 @@ async function likePostService ({ id, userId }) {
           dislikes: dislikes,
           comments: comments,
           likeUsers: likeUsers,
-          dislikeUsers: dislikeUsers
-        }
-      })
-      return { message: 'Success' }
+          dislikeUsers: dislikeUsers,
+        },
+      });
+      return { message: 'Success' };
     }
-    likes = likes + 1
-    likeUsers.push(userId)
+    likes = likes + 1;
+    likeUsers.push(userId);
     await Post.findByIdAndUpdate(id, {
       metadata: {
         likes: likes,
         dislikes: dislikes,
         comments: comments,
         likeUsers: likeUsers,
-        dislikeUsers: dislikeUsers
-      }
-    })
-    return { message: 'Success.' }
+        dislikeUsers: dislikeUsers,
+      },
+    });
+    return { message: 'Success.' };
   } catch (error) {
-    const err = new Error()
-    err.message = error.message
-    err.status = error.status
-    throw err
+    const err = new Error();
+    err.message = error.message;
+    err.status = error.status;
+    throw err;
   }
 }
 
-async function dislikePostService ({ id, userId }) {
+async function dislikePostService({ id, userId }) {
   try {
-    const post = await Post.findOne({ _id: id })
+    const post = await Post.findOne({ _id: id });
     if (!post) {
-      const err = new Error()
-      err.message = 'Post not found.'
-      err.status = 400
-      throw err
+      const err = new Error();
+      err.message = 'Post not found.';
+      err.status = 400;
+      throw err;
     }
-    const likes = post.metadata.likes
-    let dislikes = post.metadata.dislikes
-    const comments = post.metadata.comments
-    const likeUsers = post.metadata.likeUsers
-    const dislikeUsers = post.metadata.dislikeUsers
-    const checkUser = dislikeUsers.includes(userId)
+    const likes = post.metadata.likes;
+    let dislikes = post.metadata.dislikes;
+    const comments = post.metadata.comments;
+    const likeUsers = post.metadata.likeUsers;
+    const dislikeUsers = post.metadata.dislikeUsers;
+    const checkUser = dislikeUsers.includes(userId);
     if (checkUser) {
-      dislikes = dislikes - 1
-      const index = dislikeUsers.indexOf(userId)
+      dislikes = dislikes - 1;
+      const index = dislikeUsers.indexOf(userId);
       if (index > -1) {
-        dislikeUsers.splice(index, 1)
+        dislikeUsers.splice(index, 1);
       }
       await Post.findByIdAndUpdate(id, {
         metadata: {
@@ -204,58 +280,58 @@ async function dislikePostService ({ id, userId }) {
           dislikes: dislikes,
           comments: comments,
           likeUsers: likeUsers,
-          dislikeUsers: dislikeUsers
-        }
-      })
-      return { message: 'Success' }
+          dislikeUsers: dislikeUsers,
+        },
+      });
+      return { message: 'Success' };
     }
-    dislikes = dislikes + 1
-    dislikeUsers.push(userId)
+    dislikes = dislikes + 1;
+    dislikeUsers.push(userId);
     await Post.findByIdAndUpdate(id, {
       metadata: {
         likes: likes,
         dislikes: dislikes,
         comments: comments,
         likeUsers: likeUsers,
-        dislikeUsers: dislikeUsers
-      }
-    })
-    return { message: 'Success.' }
+        dislikeUsers: dislikeUsers,
+      },
+    });
+    return { message: 'Success.' };
   } catch (error) {
-    const err = new Error()
-    err.message = error.message
-    err.status = error.status
-    throw err
+    const err = new Error();
+    err.message = error.message;
+    err.status = error.status;
+    throw err;
   }
 }
 
-async function commentPostService ({ id, userId, text }) {
+async function commentPostService({ id, userId, text }) {
   try {
-    const post = await Post.findOne({ _id: id })
+    const post = await Post.findOne({ _id: id });
     if (!post) {
-      const err = new Error()
-      err.message = 'Post not found.'
-      err.status = 400
-      throw err
+      const err = new Error();
+      err.message = 'Post not found.';
+      err.status = 400;
+      throw err;
     }
-    const comments = post.metadata.comments
-    const data = { userId, text }
-    comments.push(data)
+    const comments = post.metadata.comments;
+    const data = { userId, text };
+    comments.push(data);
     await Post.findByIdAndUpdate(id, {
       metadata: {
         likes: post.metadata.likes,
         dislikes: post.metadata.dislikes,
         comments: comments,
         likeUsers: post.metadata.likeUsers,
-        dislikeUsers: post.metadata.dislikeUsers
-      }
-    })
-    return { message: 'Success.' }
+        dislikeUsers: post.metadata.dislikeUsers,
+      },
+    });
+    return { message: 'Success.' };
   } catch (error) {
-    const err = new Error()
-    err.message = error.message
-    err.status = error.status
-    throw err
+    const err = new Error();
+    err.message = error.message;
+    err.status = error.status;
+    throw err;
   }
 }
 
@@ -264,5 +340,5 @@ export {
   createPostService,
   likePostService,
   dislikePostService,
-  commentPostService
-}
+  commentPostService,
+};
