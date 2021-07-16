@@ -34,6 +34,11 @@ async function getPostService ({ regionId, townshipId, tomorrowUpdate }) {
         })
         return post
       }
+      const post = await Post.find({
+        regionId: regionId,
+        tomorrowUpdate: false
+      })
+      return post
     }
     const region = await Region.findOne({ _id: regionId })
     if (!region) {
