@@ -2,16 +2,16 @@ import Region from '../models/region'
 import Township from '../models/township'
 import Post from '../models/post'
 
-async function getPostService ({ regionName, townshipName }) {
+async function getPostService ({ regionId, townshipId }) {
   try {
-    const region = await Region.findOne({ name: regionName })
+    const region = await Region.findOne({ _id: regionId })
     if (!region) {
       const err = new Error()
       err.message = 'Region not found.'
       err.status = 400
       throw err
     }
-    const township = await Township.findOne({ name: townshipName })
+    const township = await Township.findOne({ _id: townshipId })
     if (!township) {
       const err = new Error()
       err.message = 'Township not found.'
