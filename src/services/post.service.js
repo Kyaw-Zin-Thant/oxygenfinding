@@ -32,7 +32,7 @@ async function getPostService({
         },
         dislike: {
           $cond: [
-            { $in: [ObjectId(userId), '$metadata.likeUsers'] },
+            { $in: [ObjectId(userId), '$metadata.dislikeUsers'] },
             true,
             false,
           ],
