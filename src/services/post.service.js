@@ -11,6 +11,7 @@ async function getPostService({
   userId,
 }) {
   try {
+    console.log(userId);
     let projectData = {
       $project: {
         regionId: 1,
@@ -25,18 +26,10 @@ async function getPostService({
         tomorrowUpdate: 1,
         metadata: 1,
         like: {
-          $cond: [
-            { $in: [ObjectId(userId), '$metadata.likeUsers'] },
-            true,
-            false,
-          ],
+          $cond: [{ $in: [userId, '$metadata.likeUsers'] }, true, false],
         },
         dislike: {
-          $cond: [
-            { $in: [ObjectId(userId), '$metadata.dislikeUsers'] },
-            true,
-            false,
-          ],
+          $cond: [{ $in: [userId, '$metadata.dislikeUsers'] }, true, false],
         },
       },
     };
@@ -212,17 +205,24 @@ async function likePostService({ id, userId }) {
       throw err;
     }
     let likes = post.metadata.likes;
-    const dislikes = post.metadata.dislikes;
+    let dislikes = post.metadata.dislikes;
     const comments = post.metadata.comments;
     const likeUsers = post.metadata.likeUsers;
     const dislikeUsers = post.metadata.dislikeUsers;
     const checkUser = likeUsers.includes(userId);
+    const checkDislikeUser = dislikeUsers.includes(userId);
+    if (checkDislikeUser) {
+      const disLikeIndex = dislikeUsers.indexOf(userId);
+      disLikeIndex > -1 ? dislikeUsers.splice(disLikeIndex, 1) : '';
+      disLikeIndex > -1 ? (dislikes = dislikes - 1) : '';
+    }
     if (checkUser) {
       likes = likes - 1;
       const index = likeUsers.indexOf(userId);
       if (index > -1) {
         likeUsers.splice(index, 1);
       }
+
       await Post.findByIdAndUpdate(id, {
         metadata: {
           likes: likes,
@@ -263,18 +263,27 @@ async function dislikePostService({ id, userId }) {
       err.status = 400;
       throw err;
     }
-    const likes = post.metadata.likes;
+    let likes = post.metadata.likes;
     let dislikes = post.metadata.dislikes;
     const comments = post.metadata.comments;
     const likeUsers = post.metadata.likeUsers;
     const dislikeUsers = post.metadata.dislikeUsers;
     const checkUser = dislikeUsers.includes(userId);
+    const checkLikeUser = likeUsers.includes(userId);
+    if (checkLikeUser) {
+      const likeIndex = likeUsers.indexOf(userId);
+      console.log(likeIndex);
+      likeIndex > -1 ? likeUsers.splice(likeIndex, 1) : '';
+      likeIndex > -1 ? (likes = likes - 1) : '';
+    }
     if (checkUser) {
       dislikes = dislikes - 1;
       const index = dislikeUsers.indexOf(userId);
+      console.log(index, ' fff ');
       if (index > -1) {
         dislikeUsers.splice(index, 1);
       }
+
       await Post.findByIdAndUpdate(id, {
         metadata: {
           likes: likes,
