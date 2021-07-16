@@ -99,7 +99,10 @@ async function likePostService ({ id, userId }) {
       throw err
     }
     let likes = post.metadata.likes
+    const dislikes = post.metadata.dislikes
+    const comments = post.metadata.comments
     const likeUsers = post.metadata.likeUsers
+    const dislikeUsers = post.metadata.dislikeUsers
     const checkUser = likeUsers.includes(userId)
     if (checkUser) {
       likes = likes - 1
@@ -110,7 +113,10 @@ async function likePostService ({ id, userId }) {
       await Post.findByIdAndUpdate(id, {
         metadata: {
           likes: likes,
-          likeUsers: likeUsers
+          dislikes: dislikes,
+          comments: comments,
+          likeUsers: likeUsers,
+          dislikeUsers: dislikeUsers
         }
       })
       return { message: 'Success' }
@@ -120,7 +126,10 @@ async function likePostService ({ id, userId }) {
     await Post.findByIdAndUpdate(id, {
       metadata: {
         likes: likes,
-        likeUsers: likeUsers
+        dislikes: dislikes,
+        comments: comments,
+        likeUsers: likeUsers,
+        dislikeUsers: dislikeUsers
       }
     })
     return { message: 'Success.' }
