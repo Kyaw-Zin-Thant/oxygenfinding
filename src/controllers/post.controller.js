@@ -6,8 +6,8 @@ import {
 
 async function getPost (req, res, next) {
   try {
-    const { regionId, townshipId } = req.query
-    const post = await getPostService({ regionId, townshipId })
+    const { regionId, townshipId, tomorrowUpdate } = req.query
+    const post = await getPostService({ regionId, townshipId, tomorrowUpdate })
     res.status(200).send(post)
   } catch (error) {
     next(error)

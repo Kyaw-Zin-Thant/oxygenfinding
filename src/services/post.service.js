@@ -2,7 +2,7 @@ import Region from '../models/region'
 import Township from '../models/township'
 import Post from '../models/post'
 
-async function getPostService ({ regionId, townshipId }) {
+async function getPostService ({ regionId, townshipId, tomorrowUpdate }) {
   try {
     const region = await Region.findOne({ _id: regionId })
     if (!region) {
@@ -18,9 +18,18 @@ async function getPostService ({ regionId, townshipId }) {
       err.status = 400
       throw err
     }
+    if (tomorrowUpdate === 'true') {
+      const post = await Post.find({
+        regionId: region._id,
+        townshipId: township._id,
+        tomorrowUpdate: true
+      })
+      return post
+    }
     const post = await Post.find({
       regionId: region._id,
-      townshipId: township._id
+      townshipId: township._id,
+      tomorrowUpdate: false
     })
     return post
   } catch (error) {
