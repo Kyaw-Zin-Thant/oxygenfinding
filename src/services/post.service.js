@@ -1,6 +1,7 @@
 import Region from '../models/region';
 import Township from '../models/township';
 import Post from '../models/post';
+import User from '../models/user';
 const ObjectId = require('mongoose').Types.ObjectId;
 
 async function getPostService({
@@ -308,6 +309,7 @@ async function dislikePostService({ id, userId }) {
 async function commentPostService({ id, userId, text }) {
   try {
     const post = await Post.findOne({ _id: id });
+    const user = await User.findOne({ _id: ObjectId(userId) });
     if (!post) {
       const err = new Error();
       err.message = 'Post not found.';
@@ -315,7 +317,13 @@ async function commentPostService({ id, userId, text }) {
       throw err;
     }
     const comments = post.metadata.comments;
-    const data = { userId, text };
+
+    const data = {
+      userId,
+      text,
+      username: user ? user.name : '',
+      createDate: new Date(),
+    };
     comments.push(data);
     await Post.findByIdAndUpdate(id, {
       metadata: {

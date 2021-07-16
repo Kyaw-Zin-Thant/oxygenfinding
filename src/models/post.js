@@ -1,69 +1,71 @@
-import mongoose from 'mongoose'
-const { Schema } = mongoose
-const { ObjectId } = mongoose.Schema.Types
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
+const { ObjectId } = mongoose.Schema.Types;
 
 const PostSchema = new Schema(
   {
     regionId: {
       type: ObjectId,
-      require: true
+      require: true,
     },
     townshipId: {
       type: ObjectId,
-      require: true
+      require: true,
     },
     status: {
       type: Array,
-      require: true
+      require: true,
     },
     plantName: {
       type: String,
-      require: true
+      require: true,
     },
     address: {
       type: String,
-      require: true
+      require: true,
     },
     phoneNumber: {
       type: String,
-      require: true
+      require: true,
     },
     information: {
-      type: String
+      type: String,
     },
     remark: {
-      type: String
+      type: String,
     },
     size: {
       type: Array,
-      require: true
+      require: true,
     },
     tomorrowUpdate: {
       type: Boolean,
-      default: false
+      default: false,
     },
     metadata: {
       likes: {
         type: Number,
-        default: 0
+        default: 0,
       },
       dislikes: {
         type: Number,
-        default: 0
+        default: 0,
       },
       comments: [
         {
           userId: ObjectId,
-          text: String
-        }
+          username: String,
+          text: String,
+          createDate: Date,
+        },
       ],
       likeUsers: [],
-      dislikeUsers: []
-    }
+      dislikeUsers: [],
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
-)
+);
 
-export default mongoose.model('Post', PostSchema)
+export default mongoose.model('Post', PostSchema);
