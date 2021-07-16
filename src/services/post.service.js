@@ -4,6 +4,37 @@ import Post from '../models/post'
 
 async function getPostService ({ regionId, townshipId, tomorrowUpdate }) {
   try {
+    if (!regionId) {
+      if (!townshipId) {
+        if (tomorrowUpdate === 'true') {
+          const post = await Post.find({ tomorrowUpdate: true })
+          return post
+        }
+        const post = await Post.find({ tomorrowUpdate: false })
+        return post
+      }
+      if (tomorrowUpdate === 'true') {
+        const post = await Post.find({
+          townshipId: townshipId,
+          tomorrowUpdate: true
+        })
+        return post
+      }
+      const post = await Post.find({
+        townshipId: townshipId,
+        tomorrowUpdate: false
+      })
+      return post
+    }
+    if (!townshipId) {
+      if (tomorrowUpdate === 'true') {
+        const post = await Post.find({
+          regionId: regionId,
+          tomorrowUpdate: true
+        })
+        return post
+      }
+    }
     const region = await Region.findOne({ _id: regionId })
     if (!region) {
       const err = new Error()
