@@ -132,4 +132,61 @@ async function likePostService ({ id, userId }) {
   }
 }
 
-export { getPostService, createPostService, likePostService }
+async function dislikePostService ({ id, userId }) {
+  try {
+    const post = await Post.findOne({ _id: id })
+    if (!post) {
+      const err = new Error()
+      err.message = 'Post not found.'
+      err.status = 400
+      throw err
+    }
+    const likes = post.metadata.likes
+    let dislikes = post.metadata.dislikes
+    const comments = post.metadata.comments
+    const likeUsers = post.metadata.likeUsers
+    const dislikeUsers = post.metadata.dislikeUsers
+    const checkUser = dislikeUsers.includes(userId)
+    if (checkUser) {
+      dislikes = dislikes - 1
+      const index = dislikeUsers.indexOf(userId)
+      if (index > -1) {
+        dislikeUsers.splice(index, 1)
+      }
+      await Post.findByIdAndUpdate(id, {
+        metadata: {
+          likes: likes,
+          dislikes: dislikes,
+          comments: comments,
+          likeUsers: likeUsers,
+          dislikeUsers: dislikeUsers
+        }
+      })
+      return { message: 'Success' }
+    }
+    dislikes = dislikes + 1
+    dislikeUsers.push(userId)
+    await Post.findByIdAndUpdate(id, {
+      metadata: {
+        likes: likes,
+        dislikes: dislikes,
+        comments: comments,
+        likeUsers: likeUsers,
+        dislikeUsers: dislikeUsers
+      }
+    })
+    return { message: 'Success.' }
+  } catch (error) {
+    const err = new Error()
+    err.message = error.message
+    err.status = error.status
+    throw err
+  }
+}
+
+export {
+  getPostService,
+  createPostService,
+  likePostService,
+  dislikePostService
+}
