@@ -8,5 +8,5 @@ router.get('/', getRegion);
 router.post('/', createRegion);
 
 export default (app) => {
-  app.use('api/regions', router);
+  app.use('/api/regions', router);
 };
