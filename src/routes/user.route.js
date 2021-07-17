@@ -1,11 +1,11 @@
-import express from 'express'
+import express from 'express';
 
-import { createUser } from '../controllers/user.controller'
+import { createUser } from '../controllers/user.controller';
 
-const router = express.Router()
+const router = express.Router();
 
-router.post('/', createUser)
+router.post('/', createUser);
 
-export default app => {
-  app.use('/users', router)
-}
+export default (app) => {
+  app.use('/api/users', router);
+};

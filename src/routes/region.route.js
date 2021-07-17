@@ -1,12 +1,12 @@
-import express from 'express'
+import express from 'express';
 
-import { getRegion, createRegion } from '../controllers/region.controller'
+import { getRegion, createRegion } from '../controllers/region.controller';
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/', getRegion)
-router.post('/', createRegion)
+router.get('/', getRegion);
+router.post('/', createRegion);
 
-export default app => {
-  app.use('/regions', router)
-}
+export default (app) => {
+  app.use('api/regions', router);
+};

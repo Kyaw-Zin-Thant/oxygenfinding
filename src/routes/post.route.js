@@ -19,5 +19,5 @@ router.put('/:id/dislike', checkAuth, dislikePost);
 router.put('/:id/comment', checkAuth, commentPost);
 
 export default (app) => {
-  app.use('/posts', router);
+  app.use('/api/posts', router);
 };

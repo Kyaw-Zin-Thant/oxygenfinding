@@ -1,12 +1,15 @@
-import express from 'express'
+import express from 'express';
 
-import { getTownship, createTownship } from '../controllers/township.controller'
+import {
+  getTownship,
+  createTownship,
+} from '../controllers/township.controller';
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/', getTownship)
-router.post('/', createTownship)
+router.get('/', getTownship);
+router.post('/', createTownship);
 
-export default app => {
-  app.use('/townships', router)
-}
+export default (app) => {
+  app.use('/api/townships', router);
+};
