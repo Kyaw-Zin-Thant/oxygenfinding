@@ -42,6 +42,9 @@ const PostSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    getDate: {
+      type: Date,
+    },
     metadata: {
       likes: {
         type: Number,

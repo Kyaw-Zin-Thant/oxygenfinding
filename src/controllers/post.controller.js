@@ -36,6 +36,7 @@ async function createPost(req, res, next) {
       remark,
       size,
       tomorrowUpdate,
+      getDate,
     } = req.body;
     const post = await createPostService({
       regionId,
@@ -48,6 +49,7 @@ async function createPost(req, res, next) {
       remark,
       size,
       tomorrowUpdate,
+      getDate,
     });
     res.status(200).send(post);
   } catch (error) {

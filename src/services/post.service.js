@@ -11,7 +11,10 @@ async function getPostService({
   userId,
 }) {
   try {
-    console.log(userId);
+    let sortQuery =
+      tomorrowUpdate == 'true'
+        ? { $sort: { getDate: 1 } }
+        : { $sort: { createdAt: -1 } };
     let projectData = {
       $project: {
         regionId: 1,
@@ -31,6 +34,8 @@ async function getPostService({
         dislike: {
           $cond: [{ $in: [userId, '$metadata.dislikeUsers'] }, true, false],
         },
+        getDate: 1,
+        createdAt: 1,
       },
     };
     if (!regionId) {
@@ -41,6 +46,7 @@ async function getPostService({
               $match: { tomorrowUpdate: true },
             },
             projectData,
+            sortQuery,
           ]);
           return post;
         }
@@ -49,6 +55,7 @@ async function getPostService({
             $match: { tomorrowUpdate: false },
           },
           projectData,
+          sortQuery,
         ]);
         return post;
       }
@@ -61,6 +68,7 @@ async function getPostService({
             },
           },
           projectData,
+          sortQuery,
         ]);
         return post;
       }
@@ -72,6 +80,7 @@ async function getPostService({
           },
         },
         projectData,
+        sortQuery,
       ]);
       return post;
     }
@@ -85,6 +94,7 @@ async function getPostService({
             },
           },
           projectData,
+          sortQuery,
         ]);
         return post;
       }
@@ -96,6 +106,7 @@ async function getPostService({
           },
         },
         projectData,
+        sortQuery,
       ]);
       return post;
     }
@@ -123,6 +134,7 @@ async function getPostService({
           },
         },
         projectData,
+        sortQuery,
       ]);
       return post;
     }
@@ -135,6 +147,7 @@ async function getPostService({
         },
       },
       projectData,
+      sortQuery,
     ]);
     console.log(post);
     return post;
@@ -157,6 +170,7 @@ async function createPostService({
   remark,
   size,
   tomorrowUpdate,
+  getDate,
 }) {
   try {
     const region = await Region.findOne({ _id: regionId });
@@ -173,6 +187,7 @@ async function createPostService({
       err.status = 400;
       throw err;
     }
+    getDate ? (getDate = new Date(getDate)) : '';
     const post = new Post({
       regionId: region._id,
       townshipId: township._id,
@@ -184,6 +199,7 @@ async function createPostService({
       remark,
       size,
       tomorrowUpdate,
+      getDate,
     });
     await post.save();
     return { message: 'Success.' };
