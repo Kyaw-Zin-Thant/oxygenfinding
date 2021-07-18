@@ -25,7 +25,7 @@ async function getPostService({
       ? {
           $match: {
             $expr: {
-              $or: [{ $eq: ['$ype', type] }, { $eq: ['$ype', null] }],
+              $or: [{ $eq: ['$type', type] }, { $eq: ['$type', null] }],
             },
           },
         }
