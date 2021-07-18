@@ -33,7 +33,7 @@ async function getPostService({
 
     let sortQuery =
       tomorrowUpdate == 'true'
-        ? { $sort: { getDate: sortDirection, createdAt: -1 } }
+        ? { $sort: { getDate: 1, createdAt: sortDirection } }
         : { $sort: { createdAt: sortDirection } };
     let projectData = {
       $project: {
