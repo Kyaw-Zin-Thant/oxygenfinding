@@ -9,12 +9,30 @@ async function getPostService({
   townshipId,
   tomorrowUpdate,
   userId,
+  sorting = 'desc',
+  filter = '',
 }) {
   try {
+    let sortDirection = sorting === 'desc' ? -1 : 1;
+
+    let filterQuery = filter
+      ? {
+          $match: {
+            type: filter,
+          },
+        }
+      : filter == 'Oxygen'
+      ? {
+          $match: {
+            type: null,
+          },
+        }
+      : { $match: {} };
+
     let sortQuery =
       tomorrowUpdate == 'true'
-        ? { $sort: { getDate: 1, createdAt: -1 } }
-        : { $sort: { createdAt: -1 } };
+        ? { $sort: { getDate: sortDirection, createdAt: -1 } }
+        : { $sort: { createdAt: sortDirection } };
     let projectData = {
       $project: {
         regionId: 1,
@@ -35,6 +53,7 @@ async function getPostService({
           $cond: [{ $in: [userId, '$metadata.dislikeUsers'] }, true, false],
         },
         getDate: 1,
+        type: { $cond: ['$type', '$type', ''] },
         createdAt: 1,
       },
     };
@@ -45,6 +64,7 @@ async function getPostService({
             {
               $match: { tomorrowUpdate: true },
             },
+            filterQuery,
             projectData,
             sortQuery,
           ]);
@@ -54,6 +74,7 @@ async function getPostService({
           {
             $match: { tomorrowUpdate: false },
           },
+          filterQuery,
           projectData,
           sortQuery,
         ]);
@@ -67,6 +88,7 @@ async function getPostService({
               tomorrowUpdate: true,
             },
           },
+          filterQuery,
           projectData,
           sortQuery,
         ]);
@@ -79,6 +101,7 @@ async function getPostService({
             tomorrowUpdate: false,
           },
         },
+        filterQuery,
         projectData,
         sortQuery,
       ]);
@@ -95,6 +118,7 @@ async function getPostService({
               tomorrowUpdate: true,
             },
           },
+          filterQuery,
           projectData,
           sortQuery,
         ]);
@@ -107,6 +131,7 @@ async function getPostService({
             tomorrowUpdate: false,
           },
         },
+        filterQuery,
         projectData,
         sortQuery,
       ]);
@@ -135,6 +160,7 @@ async function getPostService({
             tomorrowUpdate: true,
           },
         },
+        filterQuery,
         projectData,
         sortQuery,
       ]);
@@ -148,6 +174,7 @@ async function getPostService({
           tomorrowUpdate: false,
         },
       },
+      filterQuery,
       projectData,
       sortQuery,
     ]);
@@ -173,6 +200,7 @@ async function createPostService({
   size,
   tomorrowUpdate,
   getDate,
+  type,
 }) {
   try {
     const region = await Region.findOne({ _id: regionId });
@@ -202,6 +230,7 @@ async function createPostService({
       size,
       tomorrowUpdate,
       getDate,
+      type,
     });
     await post.save();
     return { message: 'Success.' };

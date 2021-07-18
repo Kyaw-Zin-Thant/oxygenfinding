@@ -45,6 +45,10 @@ const PostSchema = new Schema(
     getDate: {
       type: Date,
     },
+    type: {
+      type: String,
+      enum: ['Oxygen', 'Flowmeter', 'Oximeter'],
+    },
     metadata: {
       likes: {
         type: Number,

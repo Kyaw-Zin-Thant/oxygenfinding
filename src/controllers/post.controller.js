@@ -8,7 +8,7 @@ import {
 
 async function getPost(req, res, next) {
   try {
-    const { regionId, townshipId, tomorrowUpdate } = req.query;
+    const { regionId, townshipId, tomorrowUpdate, sorting, filter } = req.query;
 
     const { userId } = req.userData;
     const post = await getPostService({
@@ -16,6 +16,8 @@ async function getPost(req, res, next) {
       townshipId,
       tomorrowUpdate,
       userId,
+      sorting,
+      filter,
     });
     res.status(200).send(post);
   } catch (error) {
@@ -37,6 +39,7 @@ async function createPost(req, res, next) {
       size,
       tomorrowUpdate,
       getDate,
+      type,
     } = req.body;
     const post = await createPostService({
       regionId,
@@ -50,6 +53,7 @@ async function createPost(req, res, next) {
       size,
       tomorrowUpdate,
       getDate,
+      type,
     });
     res.status(200).send(post);
   } catch (error) {
