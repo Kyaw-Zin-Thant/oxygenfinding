@@ -63,7 +63,7 @@ async function getPostService({
         const post = await Post.aggregate([
           {
             $match: {
-              townshipId: townshipId,
+              townshipId: ObjectId(townshipId),
               tomorrowUpdate: true,
             },
           },
@@ -75,7 +75,7 @@ async function getPostService({
       const post = await Post.aggregate([
         {
           $match: {
-            townshipId: townshipId,
+            townshipId: ObjectId(townshipId),
             tomorrowUpdate: false,
           },
         },
@@ -84,12 +84,14 @@ async function getPostService({
       ]);
       return post;
     }
+
     if (!townshipId) {
+      console.log('no twon');
       if (tomorrowUpdate === 'true') {
         const post = await Post.aggregate([
           {
             $match: {
-              regionId: regionId,
+              regionId: ObjectId(regionId),
               tomorrowUpdate: true,
             },
           },
@@ -101,7 +103,7 @@ async function getPostService({
       const post = await Post.aggregate([
         {
           $match: {
-            regionId: regionId,
+            regionId: ObjectId(regionId),
             tomorrowUpdate: false,
           },
         },
