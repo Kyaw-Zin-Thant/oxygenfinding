@@ -13,24 +13,67 @@ async function getPostService({
   filter = '',
 }) {
   try {
-    let sortDirection = sorting === 'desc' ? -1 : 1;
+    let sortDirection = sorting === 'desc' ? -1 : sorting === 'asc' ? 1 : -1;
 
-    let filterQuery = filter
-      ? {
-          $match: {
-            type: filter,
-          },
-        }
-      : filter == 'Oxygen'
-      ? {
-          $match: {
-            $expr: {
-              $or: [{ $eq: ['$type', type] }, { $eq: ['$type', null] }],
+    let filterQuery =
+      sorting == 'lasted' && filter == 'Oxygen'
+        ? {
+            $match: {
+              $expr: {
+                $and: [
+                  { $or: [{ $eq: ['$type', type] }, { $eq: ['$type', null] }] },
+                  {
+                    $or: [
+                      { $gte: ['$createdAt', new Date()] },
+                      { $lte: ['$createdAt', new Date().addHours(1)] },
+                    ],
+                  },
+                ],
+              },
             },
-          },
-        }
-      : { $match: {} };
-
+          }
+        : sorting == 'lasted' && filter
+        ? {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ['$type', type] },
+                  {
+                    $or: [
+                      { $gte: ['$createdAt', new Date()] },
+                      { $lte: ['$createdAt', new Date().addHours(1)] },
+                    ],
+                  },
+                ],
+              },
+            },
+          }
+        : sorting == 'lasted' && filter == ''
+        ? {
+            $match: {
+              $expr: {
+                $or: [
+                  { $gte: ['$createdAt', new Date()] },
+                  { $lte: ['$createdAt', new Date().addHours(1)] },
+                ],
+              },
+            },
+          }
+        : filter == 'Oxygen'
+        ? {
+            $match: {
+              $expr: {
+                $or: [{ $eq: ['$type', type] }, { $eq: ['$type', null] }],
+              },
+            },
+          }
+        : filter
+        ? {
+            $match: {
+              type: filter,
+            },
+          }
+        : { $match: {} };
     let sortQuery =
       tomorrowUpdate == 'true'
         ? { $sort: { getDate: 1, createdAt: sortDirection } }
@@ -407,4 +450,8 @@ export {
   likePostService,
   dislikePostService,
   commentPostService,
+};
+Date.prototype.addHours = function (h) {
+  this.setTime(this.getTime() + h * 60 * 60 * 1000);
+  return this;
 };
