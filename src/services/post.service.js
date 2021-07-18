@@ -21,7 +21,9 @@ async function getPostService({
             $match: {
               $expr: {
                 $and: [
-                  { $or: [{ $eq: ['$type', type] }, { $eq: ['$type', null] }] },
+                  {
+                    $or: [{ $eq: ['$type', filter] }, { $eq: ['$type', null] }],
+                  },
                   {
                     $or: [
                       { $gte: ['$createdAt', new Date()] },
@@ -37,7 +39,7 @@ async function getPostService({
             $match: {
               $expr: {
                 $and: [
-                  { $eq: ['$type', type] },
+                  { $eq: ['$type', filter] },
                   {
                     $or: [
                       { $gte: ['$createdAt', new Date()] },
@@ -63,7 +65,7 @@ async function getPostService({
         ? {
             $match: {
               $expr: {
-                $or: [{ $eq: ['$type', type] }, { $eq: ['$type', null] }],
+                $or: [{ $eq: ['$type', filter] }, { $eq: ['$type', null] }],
               },
             },
           }
