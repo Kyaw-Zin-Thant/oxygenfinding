@@ -24,12 +24,8 @@ async function getPostService({
                   {
                     $or: [{ $eq: ['$type', filter] }, { $eq: ['$type', null] }],
                   },
-                  {
-                    $or: [
-                      { $gte: ['$createdAt', new Date()] },
-                      { $lte: ['$createdAt', new Date().addHours(1)] },
-                    ],
-                  },
+                  { $gte: ['$createdAt', new Date()] },
+                  { $lte: ['$createdAt', new Date().addHours(1)] },
                 ],
               },
             },
@@ -40,12 +36,8 @@ async function getPostService({
               $expr: {
                 $and: [
                   { $eq: ['$type', filter] },
-                  {
-                    $or: [
-                      { $gte: ['$createdAt', new Date()] },
-                      { $lte: ['$createdAt', new Date().addHours(1)] },
-                    ],
-                  },
+                  { $gte: ['$createdAt', new Date()] },
+                  { $lte: ['$createdAt', new Date().addHours(1)] },
                 ],
               },
             },
@@ -54,7 +46,7 @@ async function getPostService({
         ? {
             $match: {
               $expr: {
-                $or: [
+                $and: [
                   { $gte: ['$createdAt', new Date()] },
                   { $lte: ['$createdAt', new Date().addHours(1)] },
                 ],
