@@ -24,7 +24,9 @@ async function getPostService({
       : filter == 'Oxygen'
       ? {
           $match: {
-            type: null,
+            $expr: {
+              $or: [{ $eq: ['$ype', type] }, { $eq: ['$ype', null] }],
+            },
           },
         }
       : { $match: {} };
