@@ -8,8 +8,8 @@ import {
 
 async function getPost(req, res, next) {
   try {
-    const { regionId, townshipId, tomorrowUpdate, sorting, filter } = req.query;
-
+    let { regionId, townshipId, tomorrowUpdate, sorting, filter } = req.query;
+    filter == undefined ? (filter = '') : '';
     const { userId } = req.userData;
     const post = await getPostService({
       regionId,
