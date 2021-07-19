@@ -61,7 +61,7 @@ async function getPostService({
               },
             },
           }
-        : filter
+        : filter != undefined
         ? {
             $match: {
               type: filter,
